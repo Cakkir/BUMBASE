@@ -1,0 +1,14 @@
+{
+  "name": "koz-ocakbasi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Restoran web sitesi: menü, sepet, paket servis siparişi, mock sanal POS ve sipariş yönetim paneli",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js",
+    "check": "node scripts/check.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
