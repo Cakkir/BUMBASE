@@ -105,7 +105,7 @@
       taxOffice: 'Keçiören',    
       taxNumber: '1901622XXX',    
       mersis: '',       
-      email: '',        
+      email: 'bummbase@gmail.com',        
       kep: '',          
       updated: '17.10.2026',
     },
