@@ -16,6 +16,7 @@
       shortName: 'BUM BASE',
       brandSub: 'Keçiören', // logonun altındaki küçük yazı
       tagline: 'Hızlı, sıcak, lezzetli',
+      seoTitle: 'Keçiören Pizza & Burger Paket Servis', // tarayıcı sekmesi ve Google başlığı
       phone: '0312 364 44 06',
       phoneHref: '+903123644406',
       whatsapp: '+905000000000',
@@ -101,12 +102,12 @@
 
     // Yasal sayfalarda (mesafeli satış, KVKK, iade) görünen satıcı bilgileri — YAYINDAN ÖNCE DOLDURUN
     legal: {
-      company: 'BUM BASE GIDA LOJİSTİK E-TİCARET SANAYİ VE TİCARET LİMİTED ŞİRKETİ',      
-      taxOffice: 'Keçiören',    
-      taxNumber: '1901622XXX',    
-      mersis: '',       
-      email: 'bummbase@gmail.com',        
-      kep: '',          
+      company: '',      // Şirket unvanı veya şahıs işletmesi sahibinin adı soyadı
+      taxOffice: '',    // Vergi dairesi
+      taxNumber: '',    // Vergi no / TC kimlik no
+      mersis: '',       // MERSİS no (şirketse)
+      email: '',        // Başvuru ve şikâyetler için e-posta
+      kep: '',          // KEP adresi (varsa)
       updated: '17.10.2026',
     },
 
