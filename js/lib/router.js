@@ -43,7 +43,9 @@
     current.cleanup = typeof cleanup === 'function' ? cleanup : null;
 
     var name = App.config.restaurant.name;
-    document.title = page.title ? (typeof page.title === 'function' ? page.title(r.param) : page.title) + ' · ' + name : name + ' · ' + App.config.restaurant.tagline;
+    var seo = App.config.restaurant.seoTitle || App.config.restaurant.tagline;
+    var pt = page.title ? (typeof page.title === 'function' ? page.title(r.param) : page.title) : '';
+    document.title = (pt ? pt + ' · ' : '') + name + ' · ' + seo;
     if (!(sameRoute && page.keepScroll)) window.scrollTo(0, 0);
     view.focus({ preventScroll: true });
     listeners.forEach(function (fn) { fn(r); });
