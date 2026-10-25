@@ -72,7 +72,8 @@
       '</div>';
   }
 
-  function isToday(d) { var x = new Date(d), n = new Date(); return x.toDateString() === n.toDateString(); }
+  // "Bugün" = rapor günü (06:00'da başlar; gece siparişleri önceki güne sayılır)
+  function isToday(d) { return App.availability.businessDay(d) === App.availability.businessDay(new Date()); }
 
   function stats(orders) {
     var today = orders.filter(function (o) { return isToday(o.createdAt); });
@@ -130,6 +131,7 @@
   function controlBtns() {
     var st = App.storeStatus.get(), n = st.soldOut.length;
     return '<button class="btn btn-sm ' + (st.paused ? 'btn-danger' : 'btn-ghost') + ' pause-btn" data-adm="' + (st.paused ? 'resume' : 'pause') + '" aria-pressed="' + st.paused + '">' + I.pause + (st.paused ? 'Durduruldu · Aç' : 'Siparişleri durdur') + '</button>' +
+      '<button class="btn btn-sm btn-ghost" data-adm="reports">Raporlar</button>' +
       '<button class="btn btn-sm btn-ghost" data-adm="stock">Ürünler' + (n ? ' <b class="stock-count num">' + n + ' tükendi</b>' : '') + '</button>';
   }
 
@@ -219,6 +221,7 @@
       (pAt ? '<span class="chip chip--ok" title="Son baskı">' + PRN + 'Yazdırıldı ' + U.hhmm(pAt) + '</span>' : (o.status !== 'iptal' && o.status !== 'teslim' ? '<span class="chip chip--warn">' + PRN + 'Yazdırılmadı</span>' : '')) +
       '<span class="ocard-tools-btns"><button class="btn btn-sm btn-ghost" data-adm="receipt" data-id="' + o.id + '">Fiş</button>' +
       '<button class="btn btn-sm btn-soft" data-adm="print" data-id="' + o.id + '">' + PRN + (pAt ? 'Tekrar yazdır' : 'Yazdır') + '</button></span></div>';
+    var src = o.source === 'masa' || o.source === 'brosur' ? '<span class="chip chip--qr">QR · ' + esc(o.source === 'masa' ? 'Masa kartı' : 'Broşür') + '</span>' : '';
     var sched = o.schedule && o.schedule.type === 'later' ? '<span class="chip chip--info">' + I.clock + ' ' + esc(o.schedule.time) + '</span>' : '';
     return '' +
       '<article class="ocard status-' + o.status + ' ' + ageClass(o) + (st.fresh[o.id] ? ' is-fresh' : '') + '" data-order-id="' + o.id + '">' +
@@ -227,7 +230,7 @@
       '  <p class="ocard-addr">' + I.pin + '<span>' + esc(a.neighborhood) + ' Mah., ' + esc(a.street) + (a.apartment ? ', ' + esc(a.apartment) : '') + ' · <b>' + esc(a.zoneLabel) + '</b>' + (a.directions ? '<em> — ' + esc(a.directions) + '</em>' : '') + '</span></p>' +
       '  <ul class="ocard-lines">' + o.lines.map(function (l) { return '<li><b class="num">' + l.qty + '×</b><span>' + esc(l.name) + (l.portionLabel ? ' <em>' + esc(l.portionLabel) + '</em>' : '') + (l.note ? '<i>“' + esc(l.note) + '”</i>' : '') + '</span></li>'; }).join('') + '</ul>' +
       (o.note ? '<p class="ocard-note">' + esc(o.note) + '</p>' : '') +
-      '  <div class="ocard-meta">' + pay + sched + (o.cutlery ? '<span class="chip">Çatal-bıçak</span>' : '') + '<b class="num ocard-total">' + money(o.total) + '</b></div>' +
+      '  <div class="ocard-meta">' + pay + sched + src + (o.cutlery ? '<span class="chip">Çatal-bıçak</span>' : '') + '<b class="num ocard-total">' + money(o.total) + '</b></div>' +
       tools + actions +
       '</article>';
   }
@@ -300,6 +303,7 @@
       var cleanup = [];
       var st = { tab: 'aktif', q: '', confirmCancel: null, fresh: {}, orders: [], known: null };
       var alive = true;
+      var reportWin = null;
 
       function showLogin() {
         box.innerHTML = loginView();
@@ -341,6 +345,7 @@
           st.known = ids;
           st.orders = orders;
           paint();
+          if (reportWin && reportWin.isOpen()) reportWin.refresh();
         }).catch(function (e) {
           if (e.status === 401) { App.adminAuth.logout(); showLogin(); return; }
           if (!fromEvent) U.$('#adm-dash', box).innerHTML = '<div class="notice notice--error">' + esc(e.message) + '</div>';
@@ -472,6 +477,7 @@
         if (a === 'pause') confirmPause();
         if (a === 'resume') { b.disabled = true; App.storeStatus.set({ paused: false }).then(function () { App.ui.toast('Siparişler tekrar açık'); }, function (x) { b.disabled = false; App.ui.toast(esc(x.message), { type: 'error' }); }); }
         if (a === 'stock') openStock();
+        if (a === 'reports') reportWin = App.reports.open(function () { return st.orders; });
         if (a === 'install') App.pwa.install();
         if (a === 'notify') {
           if (App.notify.enabled()) { App.notify.disable(); U.$('#app-slot', box).innerHTML = appBtns(); }

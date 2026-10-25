@@ -84,6 +84,7 @@
       note: clean(p.note, 300),
       schedule: p.schedule && p.schedule.type === 'later' ? { type: 'later', time: p.schedule.time } : { type: 'asap' },
       cutlery: !!p.cutlery,
+      source: config.sources && config.sources[p.source] ? p.source : 'direkt',
       payment: {
         method: p.paymentMethod,
         methodLabel: METHODS[p.paymentMethod].label,

@@ -42,6 +42,20 @@
     return null;
   }
 
+  /** Rapor günü: restoran saatiyle, gün config.reportDayStart'ta (06:00) başlar → 'YYYY-AA-GG' */
+  function businessDay(date) {
+    var start = toMin(config.reportDayStart || '06:00');
+    var d = new Date(new Date(date).getTime() + (OFFSET - start) * 60000);
+    return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate());
+  }
+  /** 'YYYY-AA-GG' + n gün */
+  function addDays(day, n) {
+    var d = new Date(day + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n);
+    return d.toISOString().slice(0, 10);
+  }
+  /** Haftanın günü (0 = Pazar) */
+  function weekday(day) { return new Date(day + 'T12:00:00Z').getUTCDay(); }
+
   /** Başlık / sayfalar için açık-kapalı bilgisi */
   function openState(hours, now) {
     hours = hours || config.hours;
@@ -132,6 +146,6 @@
 
   return {
     clock: clock, shift: shift, openState: openState, slots: slots, validTime: validTime,
-    normalize: normalize, isSoldOut: isSoldOut, lineIds: lineIds, ordering: ordering, check: check, toMin: toMin,
+    normalize: normalize, isSoldOut: isSoldOut, lineIds: lineIds, businessDay: businessDay, addDays: addDays, weekday: weekday, ordering: ordering, check: check, toMin: toMin,
   };
 });

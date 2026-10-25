@@ -863,3 +863,63 @@ body[data-ordering="open"] .btn-add:not(:disabled):hover { background: var(--emb
 .choice-group { display: grid; gap: 10px; margin-block: 4px 2px; }
 .choice-group .field-label { font-weight: 600; }
 .cart-choices { margin-top: 2px; font-size: var(--fs-xs); color: var(--ember-2); }
+
+/* =====================================================================
+   Panel: Raporlar
+   ===================================================================== */
+.chip--qr { background: rgba(255, 122, 47, .14); color: var(--ember-2); }
+.modal--report { max-width: 1100px; width: 100%; }
+.rp { padding: 26px 22px 24px; display: flex; flex-direction: column; gap: 16px; }
+.rp-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-right: 44px; }
+.rp-head p { margin-top: 4px; font-size: var(--fs-sm); }
+.rp-note { color: var(--faint); font-size: var(--fs-xs); }
+.rp-periods { flex-wrap: wrap; align-self: flex-start; }
+.rp-tiles { margin: 0; }
+.rp-grid { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 860px) { .rp-grid { grid-template-columns: 1fr 1fr; } .rp-card--wide { grid-column: 1 / -1; } }
+.rp-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; min-width: 0; }
+.rp-card h3 { font-size: var(--fs-base); font-weight: 700; }
+.rp-sub { margin-top: 2px; font-size: var(--fs-xs); color: var(--muted); }
+
+/* Sütun grafiği (günlük ciro, saatler) */
+.rpc { display: flex; align-items: stretch; gap: 4px; height: 190px; margin-top: 14px; padding-bottom: 2px; border-bottom: 1px solid var(--line); }
+.rpc-col { position: relative; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; outline: none; }
+.rpc-bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; border-radius: 6px; transition: background .15s; }
+.rpc-bar { display: block; width: min(70%, 34px); min-height: 0; border-radius: 4px 4px 0 0; background: var(--ember); transition: filter .15s; }
+.rpc-bar--soft { background: var(--ember-2); }
+.rpc-x { font-size: .68rem; line-height: 1.15; color: var(--faint); text-align: center; height: 26px; }
+.rpc--many .rpc-x { height: 14px; }
+.rpc--many .rpc-col:nth-child(even) .rpc-x { visibility: hidden; }
+.rpc-col:hover .rpc-bar-wrap, .rpc-col:focus-visible .rpc-bar-wrap { background: var(--surface-2); }
+.rpc-col:hover .rpc-bar, .rpc-col:focus-visible .rpc-bar { filter: brightness(1.15); }
+.rpc-tip { position: absolute; bottom: calc(100% - 18px); left: 50%; transform: translateX(-50%); z-index: 2; white-space: nowrap; padding: 6px 10px; border-radius: 8px; background: var(--surface-3); border: 1px solid var(--line-2); color: var(--text); font-size: var(--fs-xs); font-weight: 600; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .12s; }
+.rpc-col:first-child .rpc-tip, .rpc-col:nth-child(2) .rpc-tip { left: 0; transform: none; }
+.rpc-col:last-child .rpc-tip, .rpc-col:nth-last-child(2) .rpc-tip { left: auto; right: 0; transform: none; }
+.rpc-col:hover .rpc-tip, .rpc-col:focus-visible .rpc-tip { opacity: 1; }
+.rpc--hours { height: 140px; }
+
+/* Oran listeleri */
+.sh-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 12px; }
+.sh-top { display: flex; justify-content: space-between; gap: 10px; font-size: var(--fs-sm); }
+.sh-name { font-weight: 600; }
+.sh-val { font-weight: 700; }
+.sh-track { height: 8px; margin-top: 6px; border-radius: 999px; background: var(--surface-3); overflow: hidden; }
+.sh-track i { display: block; height: 100%; border-radius: 999px; background: var(--ember); }
+.sh-meta { margin-top: 4px; font-size: var(--fs-xs); color: var(--faint); }
+
+/* QR kartı */
+.rp-qr { background: linear-gradient(160deg, rgba(255, 122, 47, .12), var(--surface) 60%); border-color: rgba(255, 122, 47, .35); }
+.rp-qr-big { display: flex; align-items: baseline; gap: 10px; margin: 10px 0 8px; }
+.rp-qr-big > b { font-size: 2.4rem; line-height: 1; color: var(--ember-2); }
+.rp-qr-big span { color: var(--muted); font-size: var(--fs-sm); }
+.rp-qr-list { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 6px; font-size: var(--fs-sm); }
+.rp-qr-list li { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; padding: 8px 10px; border-radius: 10px; background: var(--surface-2); }
+
+/* En çok satanlar */
+.rp-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: var(--fs-sm); }
+.rp-table th { text-align: left; font-size: var(--fs-xs); font-weight: 600; color: var(--faint); padding: 0 6px 6px; border-bottom: 1px solid var(--line); }
+.rp-table td { padding: 7px 6px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.rp-table tr:last-child td { border-bottom: 0; }
+.rp-table .r { text-align: right; white-space: nowrap; }
+.rp-pname { display: block; font-weight: 600; }
+.rp-pbar { display: block; height: 3px; margin-top: 4px; border-radius: 2px; background: var(--ember); opacity: .7; }

@@ -114,6 +114,20 @@
     // Site ilk açıldığında gösterilecek sayfa: 'menu' veya 'home' (ana sayfaya #anasayfa ile gidilir)
     startPage: 'menu',
 
+    // Raporlarda gün bu saatte başlar: gece 00:00–05:59 arası siparişler bir önceki güne sayılır
+    reportDayStart: '06:00',
+
+    // Sipariş kaynakları. QR kodlar siteye ?k=<anahtar> ile gelir (ör. https://bumbase.com.tr/?k=masa)
+    sources: {
+      masa: 'Masa kartı QR',
+      brosur: 'Broşür QR',
+      google: 'Google',
+      instagram: 'Instagram',
+      facebook: 'Facebook',
+      whatsapp: 'WhatsApp',
+      direkt: 'Doğrudan / diğer',
+    },
+
     // Restoran sipariş paneli ayrı sayfadadır (müşteri sitesinde panel kodu bulunmaz).
     // Kendi alan adınızda ayrı bir alt alan adı kullanacaksanız tam adresi yazın, ör. 'https://panel.bumbase.com.tr/'
     panelUrl: 'panel/index.html',
