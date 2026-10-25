@@ -102,11 +102,11 @@
 
     // Yasal sayfalarda (mesafeli satış, KVKK, iade) görünen satıcı bilgileri — YAYINDAN ÖNCE DOLDURUN
     legal: {
-      company: '',      // Şirket unvanı veya şahıs işletmesi sahibinin adı soyadı
-      taxOffice: '',    // Vergi dairesi
-      taxNumber: '',    // Vergi no / TC kimlik no
+      company: 'BUM BASE GIDA LOJİSTİK E-TİCARET SANAYİ VE TİCARET LİMİTED ŞİRKETİ',  
+      taxOffice: 'Keçiören', 
+      taxNumber: '19001622859',
       mersis: '',       // MERSİS no (şirketse)
-      email: '',        // Başvuru ve şikâyetler için e-posta
+      email: 'bummbase@gmail.com',
       kep: '',          // KEP adresi (varsa)
       updated: '17.10.2026',
     },
