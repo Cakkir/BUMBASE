@@ -858,3 +858,8 @@ body[data-ordering="open"] .btn-add:not(:disabled):hover { background: var(--emb
 .switch input:disabled + i { opacity: .6; }
 .switch-label { width: 58px; font-size: var(--fs-xs); font-weight: 600; color: var(--muted); }
 .stock-row.is-off .switch-label { color: var(--crit); }
+
+/* Menü (kombo) seçimleri */
+.choice-group { display: grid; gap: 10px; margin-block: 4px 2px; }
+.choice-group .field-label { font-weight: 600; }
+.cart-choices { margin-top: 2px; font-size: var(--fs-xs); color: var(--ember-2); }
