@@ -144,6 +144,7 @@
   }
 
   function soldOut(id) { return !!(App.storeStatus && App.storeStatus.isSoldOut(id)); }
+  function lineSoldOut(l) { return !!(l && App.storeStatus && App.storeStatus.lineSoldOut(l)); }
 
   /** Kartlardaki sepet adedini ve tükendi durumunu yeniden çizmeden günceller */
   function refreshCardBadges(root) {
@@ -186,13 +187,14 @@
     var portionSel = item.portions ? '<label class="sr-only" for="portion-' + esc(line.key) + '">' + esc(item.optionLabel || 'Seçenek') + '</label><select class="select select--sm" id="portion-' + esc(line.key) + '" data-action="cart-portion" data-key="' + esc(line.key) + '">' +
       item.portions.map(function (p) { return '<option value="' + p.id + '"' + (p.id === line.portion ? ' selected' : '') + '>' + esc(p.label) + ' · ' + money(p.price, true) + '</option>'; }).join('') + '</select>' : '';
     return '' +
-      '<li class="cart-line' + (compact ? ' cart-line--compact' : '') + (soldOut(line.id) ? ' is-soldout' : '') + '">' +
+      '<li class="cart-line' + (compact ? ' cart-line--compact' : '') + (lineSoldOut(line) ? ' is-soldout' : '') + '">' +
       '  <div class="cart-thumb">' + App.illustrations.itemMedia(item, { portion: line.portion }) + '</div>' +
       '  <div class="cart-info">' +
       '    <div class="cart-row"><strong>' + esc(item.name) + '</strong><span class="num cart-total">' + money(unit * line.qty) + '</span></div>' +
       (portionSel ? '<div class="cart-portion">' + portionSel + '</div>' : '<div class="muted text-sm num">' + money(unit) + ' / adet</div>') +
+      (item.choices ? '<div class="cart-choices">' + App.pricing.normChoices(item, line.choices).map(function (c) { return esc(c.name); }).join(' · ') + '</div>' : '') +
       (line.note ? '<div class="cart-note">“' + esc(line.note) + '”</div>' : '') +
-      (soldOut(line.id) ? '<div class="cart-soldout">Tükendi — siparişe devam etmek için sepetten çıkarın</div>' : '') +
+      (lineSoldOut(line) ? '<div class="cart-soldout">Tükendi — siparişe devam etmek için sepetten çıkarın</div>' : '') +
       '    <div class="cart-row cart-actions">' + stepper(line.key, line.qty, true) +
       '      <button class="link-btn" data-action="cart-remove" data-key="' + esc(line.key) + '">Kaldır</button></div>' +
       '  </div>' +
@@ -321,6 +323,15 @@
     var portion = App.pricing.defaultPortion(item);
     var qty = 1;
     var why = App.storeStatus ? App.storeStatus.canAdd(id) : null;
+    // Menü seçimleri (pizza, içecek): tükenen seçenekler seçilemez
+    var sel = {};
+    var choicesHtml = (item.choices || []).map(function (ch) {
+      var first = ch.options.filter(function (o) { return !soldOut(o); })[0] || ch.options[0];
+      sel[ch.id] = first;
+      return '<label class="field"><span class="field-label">' + esc(ch.label) + '</span><select class="select" data-choice="' + esc(ch.id) + '">' +
+        ch.options.map(function (o) { var it = App.pricing.findItem(o); var so = soldOut(o); return '<option value="' + esc(o) + '"' + (o === first ? ' selected' : '') + (so ? ' disabled' : '') + '>' + esc(it ? it.name : o) + (so ? ' (tükendi)' : '') + '</option>'; }).join('') +
+        '</select></label>';
+    }).join('');
     var portions = item.portions ? '<fieldset class="opt-group"><legend>' + esc(item.optionLabel || 'Seçenek') + '</legend>' + item.portions.map(function (p, i) {
       return '<label class="opt"><input type="radio" name="portion" value="' + p.id + '"' + (i === 0 ? ' checked' : '') + '><span>' + esc(p.label) + '</span><b class="num">' + money(p.price, true) + '</b></label>';
     }).join('') + '</fieldset>' : '';
@@ -330,7 +341,7 @@
       '  <div class="dish-tags static">' + tagBadges(item, 3) + '</div>' +
       '  <h2 class="display-sm">' + esc(item.name) + '</h2>' +
       '  <p class="muted">' + esc(item.desc) + (item.grams ? ' <span class="num">· ' + esc(item.grams) + '</span>' : '') + '</p>' +
-      portions +
+      portions + (choicesHtml ? '<div class="choice-group">' + choicesHtml + '</div>' : '') +
       '  <label class="field"><span class="field-label">Ürün notu <em>(isteğe bağlı)</em></span><input class="input" id="item-note" maxlength="140" placeholder="Örn: soğansız olsun, turşu olmasın"></label>' +
       '  <div class="item-modal-foot">' +
       '    <div class="stepper" role="group" aria-label="Adet"><button data-m="dec" aria-label="Azalt">' + I.minus + '</button><output class="num" id="m-qty">1</output><button data-m="inc" aria-label="Artır">' + I.plus + '</button></div>' +
@@ -345,6 +356,8 @@
     }
     update();
     m.addEventListener('change', function (e) {
+      var ck = e.target.getAttribute && e.target.getAttribute('data-choice');
+      if (ck) { sel[ck] = e.target.value; return; }
       if (e.target.name !== 'portion') return;
       portion = e.target.value; update();
       if (item.image) U.$('#m-media', m).innerHTML = App.illustrations.itemMedia(item, { portion: portion });
@@ -357,7 +370,7 @@
       if (a === 'add') {
         var w = App.storeStatus && App.storeStatus.canAdd(item.id);
         if (w) { toast(esc(w), { type: 'error', ms: 4500 }); return; }
-        App.cart.add(item.id, portion, qty, U.$('#item-note', m).value.trim());
+        App.cart.add(item.id, portion, qty, U.$('#item-note', m).value.trim(), item.choices ? sel : null);
         closeModal(true);
         added(item, qty);
         return;
@@ -383,7 +396,7 @@
     var item = App.pricing.findItem(id);
     if (!item) return;
     if (!guardAdd(id)) return;
-    if (item.portions) return openItem(id);
+    if (item.portions || item.choices) return openItem(id);
     App.cart.add(id, null, 1);
     added(item, 1);
   }
@@ -409,7 +422,7 @@
           if (el.classList.contains('is-disabled')) { e.preventDefault(); return; }
           setCartOpen(false); break;
         case 'cart-inc':
-          if (soldOut((lineByKey(key) || {}).id)) { toast('Bu ürün şu an tükendi.', { type: 'error' }); break; }
+          if (lineSoldOut(lineByKey(key))) { toast('Bu ürün şu an tükendi.', { type: 'error' }); break; }
           App.cart.setQty(key, (lineByKey(key) || { qty: 0 }).qty + 1); break;
         case 'cart-dec': App.cart.setQty(key, (lineByKey(key) || { qty: 1 }).qty - 1); break;
         case 'cart-remove': App.cart.remove(key); break;

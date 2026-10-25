@@ -27,19 +27,22 @@
     };
   }
 
-  function lineKey(id, portion) { return id + '|' + (portion || ''); }
+  function lineKey(id, portion, choices) {
+    var c = App.pricing.choiceKey(choices);
+    return id + '|' + (portion || '') + (c ? '|' + c : '');
+  }
 
   function cartReducer(items, a) {
     switch (a.type) {
       case 'CART_ADD': {
-        var key = lineKey(a.id, a.portion);
+        var key = lineKey(a.id, a.portion, a.choices);
         var found = false;
         var next = items.map(function (l) {
           if (l.key !== key) return l;
           found = true;
           return Object.assign({}, l, { qty: Math.min(50, l.qty + (a.qty || 1)), note: a.note || l.note });
         });
-        if (!found) next = next.concat([{ key: key, id: a.id, portion: a.portion || null, qty: a.qty || 1, note: a.note || '' }]);
+        if (!found) next = next.concat([Object.assign({ key: key, id: a.id, portion: a.portion || null, qty: a.qty || 1, note: a.note || '' }, a.choices ? { choices: App.pricing.choiceMap(a.choices) } : {})]);
         return next;
       }
       case 'CART_SET_QTY':
@@ -117,7 +120,7 @@
       var l = store.getState().cart.filter(function (x) { return x.key === k; })[0];
       return l ? l.qty : 0;
     },
-    add: function (id, portion, qty, note) { store.dispatch({ type: 'CART_ADD', id: id, portion: portion, qty: qty || 1, note: note }); },
+    add: function (id, portion, qty, note, choices) { store.dispatch({ type: 'CART_ADD', id: id, portion: portion, qty: qty || 1, note: note, choices: choices || null }); },
     setQty: function (key, qty) { store.dispatch({ type: 'CART_SET_QTY', key: key, qty: qty }); },
     remove: function (key) { store.dispatch({ type: 'CART_REMOVE', key: key }); },
     clear: function () { store.dispatch({ type: 'CART_CLEAR' }); },

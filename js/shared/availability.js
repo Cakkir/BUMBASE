@@ -88,6 +88,14 @@
     };
   }
 
+  /** Satırdaki ürün ve menü seçimlerinin id'leri */
+  function lineIds(l) {
+    var ids = [l.id], c = l.choices;
+    if (Array.isArray(c)) c.forEach(function (x) { if (x && x.item) ids.push(x.item); });
+    else if (c && typeof c === 'object') Object.keys(c).forEach(function (k) { ids.push(c[k]); });
+    return ids;
+  }
+
   function isSoldOut(status, id) { return !!(status && status.soldOut && status.soldOut.indexOf(id) >= 0); }
 
   /**
@@ -110,7 +118,8 @@
     p = p || {};
     var o = ordering(status, now);
     if (!o.ok) return { code: o.code, error: o.title + '. ' + o.message };
-    var out = (p.lines || []).filter(function (l) { return isSoldOut(status, l.id); }).map(function (l) { return l.id; });
+    var out = [];
+    (p.lines || []).forEach(function (l) { lineIds(l).forEach(function (id) { if (isSoldOut(status, id)) out.push(id); }); });
     if (out.length) {
       var list = out.filter(function (id, i) { return out.indexOf(id) === i; });
       return { code: 'soldout', soldOut: list, error: 'Sepetinizdeki şu ürün(ler) tükendi: ' + list.map(function (id) { return names[id] || id; }).join(', ') + '. Lütfen sepetten çıkarın.' };
@@ -123,6 +132,6 @@
 
   return {
     clock: clock, shift: shift, openState: openState, slots: slots, validTime: validTime,
-    normalize: normalize, isSoldOut: isSoldOut, ordering: ordering, check: check, toMin: toMin,
+    normalize: normalize, isSoldOut: isSoldOut, lineIds: lineIds, ordering: ordering, check: check, toMin: toMin,
   };
 });

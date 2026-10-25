@@ -35,6 +35,31 @@
     return Math.min.apply(null, item.portions.map(function (p) { return p.price; }));
   }
 
+  /** Menü seçimlerini doğrular: { pizza1: 'p-margarita', icecek: 'i-sariyer-kola' } → [{ id, label, item, name }]
+   *  Geçersiz / eksik seçimde ilk seçenek kullanılır. Ürün menü değilse null. */
+  function normChoices(item, sel) {
+    if (!item || !item.choices) return null;
+    sel = choiceMap(sel) || {};
+    return item.choices.map(function (ch) {
+      var v = sel[ch.id];
+      if (ch.options.indexOf(v) < 0) v = ch.options[0];
+      var it = byId[v];
+      return { id: ch.id, label: ch.label, item: v, name: it ? it.name : v };
+    });
+  }
+  /** Sipariş satırındaki dizi biçimini veya nesneyi { id: ürün } nesnesine çevirir */
+  function choiceMap(c) {
+    if (!c) return null;
+    if (Array.isArray(c)) { var o = {}; c.forEach(function (x) { if (x && x.id) o[x.id] = x.item; }); return o; }
+    return typeof c === 'object' ? c : null;
+  }
+  /** Sepet satırı anahtarı için seçim özeti */
+  function choiceKey(c) {
+    c = choiceMap(c);
+    if (!c) return '';
+    return Object.keys(c).sort().map(function (k) { return k + '=' + c[k]; }).join(',');
+  }
+
   function zoneById(zoneId) {
     var zones = config.delivery.zones;
     for (var i = 0; i < zones.length; i++) if (zones[i].id === zoneId) return zones[i];
@@ -56,11 +81,13 @@
       if (!qty) return;
       var p = portionOf(item, l.portion);
       var unit = p ? p.price : item.price;
+      var ch = normChoices(item, l.choices);
       out.push({
         id: item.id,
         name: item.name,
         portion: p ? p.id : null,
-        portionLabel: p ? p.label : null,
+        portionLabel: p ? p.label : (ch ? ch.map(function (c) { return c.name; }).join(', ') : null),
+        choices: ch,
         qty: qty,
         unit: unit,
         total: round2(unit * qty),
@@ -99,6 +126,9 @@
     fromPrice: fromPrice,
     zoneById: zoneById,
     priceCart: priceCart,
+    normChoices: normChoices,
+    choiceMap: choiceMap,
+    choiceKey: choiceKey,
     round2: round2,
   };
 });

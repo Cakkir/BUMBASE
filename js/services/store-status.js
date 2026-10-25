@@ -59,6 +59,7 @@
     get: function () { return status; },
     ordering: function () { return A.ordering(status); },
     isSoldOut: function (id) { return A.isSoldOut(status, id); },
+    lineSoldOut: function (l) { return A.lineIds(l).some(function (id) { return A.isSoldOut(status, id); }); },
     canAdd: function (id) {
       if (A.isSoldOut(status, id)) return itemName(id) + ' şu an tükendi.';
       var o = A.ordering(status);
@@ -67,7 +68,8 @@
     cartIssue: function (lines) {
       var o = A.ordering(status);
       if (!o.ok) return o;
-      var out = (lines || App.store.getState().cart).filter(function (l) { return A.isSoldOut(status, l.id); }).map(function (l) { return l.id; });
+      var out = [];
+      (lines || App.store.getState().cart).forEach(function (l) { A.lineIds(l).forEach(function (id) { if (A.isSoldOut(status, id)) out.push(id); }); });
       if (out.length) return { ok: false, code: 'soldout', soldOut: out, title: 'Sepetinizde tükenen ürün var', message: out.filter(function (id, i) { return out.indexOf(id) === i; }).map(itemName).join(', ') + ' şu an tükendi. Devam etmek için sepetten çıkarın.' };
       return null;
     },

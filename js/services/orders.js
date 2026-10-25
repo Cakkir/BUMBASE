@@ -134,7 +134,7 @@
   // Müşterinin bu cihazdan verdiği siparişler (takip linki için)
   function rememberMine(order) {
     var mine = U.storage.get(MY_KEY, []).filter(function (x) { return x.id !== order.id; });
-    mine.unshift({ id: order.id, createdAt: order.createdAt, total: order.total, lines: order.lines.map(function (l) { return { id: l.id, portion: l.portion, qty: l.qty }; }) });
+    mine.unshift({ id: order.id, createdAt: order.createdAt, total: order.total, lines: order.lines.map(function (l) { return { id: l.id, portion: l.portion, qty: l.qty, choices: App.pricing.choiceMap(l.choices) }; }) });
     U.storage.set(MY_KEY, mine.slice(0, 10));
   }
 

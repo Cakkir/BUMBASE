@@ -81,7 +81,7 @@
       var poll = setInterval(load, 30000); // SSE kopsa bile güncel kalsın
       function onClick(e) {
         if (!e.target.closest('[data-order="again"]') || !current) return;
-        current.lines.forEach(function (l) { if (App.pricing.findItem(l.id)) App.cart.add(l.id, l.portion, l.qty); });
+        current.lines.forEach(function (l) { if (App.pricing.findItem(l.id)) App.cart.add(l.id, l.portion, l.qty, '', App.pricing.choiceMap(l.choices)); });
         App.ui.toast('Ürünler sepete eklendi', { action: { href: '#sepet', label: 'Sepete git' } });
       }
       root.addEventListener('click', onClick);

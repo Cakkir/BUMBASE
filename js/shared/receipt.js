@@ -84,7 +84,8 @@
     // Ürünler
     o.lines.forEach(function (l) {
       cols(l.qty + 'x ' + l.name, tl(l.total), { bold: true });
-      if (l.portionLabel) t('   ' + l.portionLabel);
+      if (l.choices && l.choices.length) l.choices.forEach(function (c) { t('   - ' + c.label + ': ' + c.name); });
+      else if (l.portionLabel) t('   ' + l.portionLabel);
       if (l.qty > 1) t('   (' + l.qty + ' x ' + tl(l.unit) + ')');
       if (l.note) t('   Not: ' + l.note, { bold: true });
     });

@@ -242,7 +242,7 @@
         cutlery: U.$('#cutlery', root).checked,
         paymentMethod: method(),
         acceptTerms: U.$('#acceptTerms', root).checked,
-        lines: App.store.getState().cart.map(function (l) { return { id: l.id, portion: l.portion, qty: l.qty, note: l.note }; }),
+        lines: App.store.getState().cart.map(function (l) { return { id: l.id, portion: l.portion, qty: l.qty, note: l.note, choices: l.choices || null }; }),
       };
     }
 

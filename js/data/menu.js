@@ -4,6 +4,7 @@
  * - price: tek fiyatlı ürünler için TL
  * - portions: seçenekli ürünler için [{ id, label, price }] (pizzada boy, içecekte hacim)
  * - optionLabel: seçenek grubunun adı (ör. 'Boy')
+ * - choices: menülerde müşterinin seçtiği ürünler [{ id, label, options: [ürün id] }] (fiyata dahildir)
  * - art: yerleşik illüstrasyon tanımı (js/lib/illustrations.js)
  * - image: gerçek ürün fotoğrafı URL'si (verilirse illüstrasyonun yerine geçer)
  * - tags: 'acili' | 'vejetaryen' | 'sef' | 'yeni'
@@ -26,7 +27,13 @@
   var pizza = function (t) { return { type: 'pizza', t: t }; };
   var drink = function (color, icon, both) { return { type: 'drink', color: color, icon: icon, both: both !== false }; };
 
+  // Menülerde seçilebilecek ürünler
+  var KLASIK = ['p-margarita', 'p-sebzesever', 'p-sucukmisir', 'p-lezzet3', 'p-dortmevsim', 'p-akdeniz', 'p-potato'];
+  var SARIYER = ['i-sariyer-kola', 'i-sariyer-portakal', 'i-sariyer-gazoz'];
+  var drinkChoice = function (label) { return { id: 'icecek', label: label, options: SARIYER }; };
+
   var categories = [
+    { id: 'menuler', label: 'Menüler', blurb: 'Avantajlı paketler, içecek dahil', cover: 'm-biondan' },
     { id: 'klasik', label: 'Klasik Pizzalar', blurb: 'Orta ve dev boy', cover: 'p-margarita' },
     { id: 'super', label: 'Süper Pizzalar', blurb: 'Bol malzemeli', cover: 'p-karisik' },
     { id: 'efsane', label: 'Efsane Pizzalar', blurb: 'Tavuklu ve ton balıklı', cover: 'p-bbq' },
@@ -39,6 +46,26 @@
   ];
 
   var items = [
+    // ---------- MENÜLER ----------
+    { id: 'm-cheeseburger', cat: 'menuler', name: 'Cheeseburger Menü', price: 460,
+      desc: 'Base Burger, parmak patates ve 330 ml Sarıyer.', tags: [],
+      choices: [drinkChoice('İçecek (330 ml Sarıyer)')] },
+    { id: 'm-2pizza', cat: 'menuler', name: '2’li Orta Boy Pizza Menü', price: 590, highlight: true,
+      desc: 'Seçeceğiniz 2 orta boy klasik pizza ve 1 L Sarıyer.', tags: [],
+      choices: [{ id: 'pizza1', label: '1. pizza (orta boy)', options: KLASIK }, { id: 'pizza2', label: '2. pizza (orta boy)', options: KLASIK }, drinkChoice('İçecek (1 L Sarıyer)')] },
+    { id: 'm-2cajun', cat: 'menuler', name: 'İkili Cajun Burger Menü', price: 650,
+      desc: '2 Cajun Burger, 2 parmak patates ve 1 L Sarıyer.', tags: [],
+      choices: [drinkChoice('İçecek (1 L Sarıyer)')] },
+    { id: 'm-2base', cat: 'menuler', name: 'İkili Base Burger Menü', price: 790,
+      desc: '2 Base Burger, 2 parmak patates ve 1 L Sarıyer.', tags: [],
+      choices: [drinkChoice('İçecek (1 L Sarıyer)')] },
+    { id: 'm-tika', cat: 'menuler', name: 'Tıka Base Menü', price: 840, highlight: true,
+      desc: 'Seçeceğiniz dev boy klasik pizza, kemiksiz Cajun sepeti ve 1 L Sarıyer.', tags: [],
+      choices: [{ id: 'pizza', label: 'Pizza (dev boy)', options: KLASIK }, drinkChoice('İçecek (1 L Sarıyer)')] },
+    { id: 'm-biondan', cat: 'menuler', name: 'Bi Ondan Bi Bundan Menü', price: 720, highlight: true, featured: true,
+      desc: 'Seçeceğiniz orta boy klasik pizza, Base Burger, parmak patates ve 1 L Sarıyer.', tags: ['sef'],
+      choices: [{ id: 'pizza', label: 'Pizza (orta boy)', options: KLASIK }, drinkChoice('İçecek (1 L Sarıyer)')] },
+
     // ---------- KLASİK PİZZALAR ----------
     { id: 'p-margarita', cat: 'klasik', name: 'Margarita', portions: PZ(285, 520), optionLabel: 'Boy',
       desc: 'Pizza sosu, mozarella peyniri, ekstra mozarella, fesleğen, cherry domates.', tags: ['vejetaryen'], popular: true,
@@ -64,7 +91,7 @@
 
     // ---------- SÜPER PİZZALAR ----------
     { id: 'p-karisik', cat: 'super', name: 'Karışık Pizza', portions: PZ(335, 590), optionLabel: 'Boy',
-      desc: 'Pizza sosu, mozarella peyniri, sucuk, salam, sosis, mantar, mısır, kırmızı biber, yeşil biber.', tags: [], popular: true, highlight: true,
+      desc: 'Pizza sosu, mozarella peyniri, sucuk, salam, sosis, mantar, mısır, kırmızı biber, yeşil biber.', tags: [], popular: true,
       art: pizza([['salam', 6], ['sucuk', 8], ['sosis', 8], ['mantar', 6], ['kirmizibiber', 6], ['yesilbiber', 6], ['misir', 20]]) },
     { id: 'p-cheezza', cat: 'super', name: 'Cheezza', portions: PZ(335, 590), optionLabel: 'Boy',
       desc: 'Pizza sosu, mozarella peyniri, ekstra mozarella, çedar peyniri, beyaz peynir, top mozarella.', tags: ['vejetaryen'],
@@ -189,6 +216,7 @@
     's-ketcap', 's-mayonez', 's-bbq', 's-hardal', 's-sarimsakli', 's-ranch', 's-aci',
     'b-base', 'b-cheese', 'b-double', 'b-bumbase', 'b-cajun', 'b-izgaratavuk', 'b-acilicajun',
     'd-sufle',
+    'm-cheeseburger', 'm-2pizza', 'm-2cajun', 'm-2base', 'm-tika', 'm-biondan',
   ];
   var bottlePhotos = ['i-sariyer-kola', 'i-sariyer-portakal', 'i-sariyer-gazoz', 'i-kola', 'i-fanta', 'i-sprite',
     'i-fuse-seftali', 'i-fuse-limon', 'i-fuse-mango', 'i-ayran'];

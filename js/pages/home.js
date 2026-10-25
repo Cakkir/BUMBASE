@@ -202,8 +202,8 @@
           (mine.lines || []).forEach(function (l) {
             var it = App.pricing.findItem(l.id);
             if (!it) return;
-            if (App.storeStatus.isSoldOut(l.id)) { skipped.push(it.name); return; }
-            App.cart.add(l.id, l.portion, l.qty);
+            if (App.storeStatus.lineSoldOut(l)) { skipped.push(it.name); return; }
+            App.cart.add(l.id, l.portion, l.qty, '', App.pricing.choiceMap(l.choices));
           });
           App.ui.toast('Son siparişiniz sepete eklendi' + (skipped.length ? ' (tükenen: ' + esc(skipped.join(', ')) + ')' : ''), { action: { href: '#sepet', label: 'Sepete git' } });
         }
